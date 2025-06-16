@@ -10,10 +10,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-import  useLogin from "../../hooks/useAuth";  
+import useLogin from "../../hooks/useAuth";
 
 const Navbar = () => {
-  // const username = localStorage.getItem("username");
   const role_name = localStorage.getItem("role_name");
   const { handleLogout } = useLogin();
 
@@ -44,10 +43,18 @@ const Navbar = () => {
 
         <ul className="navbar-nav flex-row align-items-center gap-3">
           <li className="nav-item">
-            <FontAwesomeIcon icon={faEnvelope} role="button" style={{ color: "#DAD3E2" }} />
+            <FontAwesomeIcon
+              icon={faEnvelope}
+              role="button"
+              style={{ color: "#DAD3E2" }}
+            />
           </li>
           <li className="nav-item">
-            <FontAwesomeIcon icon={faBell} role="button" style={{ color: "#DAD3E2" }} />
+            <FontAwesomeIcon
+              icon={faBell}
+              role="button"
+              style={{ color: "#DAD3E2" }}
+            />
           </li>
 
           <li className="nav-item mx-3">
@@ -63,14 +70,14 @@ const Navbar = () => {
               tabIndex="0"
               className="d-flex align-items-center cursor-pointer"
             >
-            <div className="d-flex flex-column me-2">
-  {/* <span className="text-secondary fw-medium" style={{ fontSize: "12px" }}>
-    {username}
-  </span> */}
-  <span className="text-secondary fw-medium" style={{ fontSize: "12px" }}>
-    {role_name}
-  </span>
-</div>
+              <div className="d-flex flex-column me-2">
+                <span
+                  className="text-secondary fw-medium"
+                  style={{ fontSize: "12px" }}
+                >
+                  {role_name}
+                </span>
+              </div>
 
               <img
                 src="/images/profile.svg"
@@ -82,18 +89,42 @@ const Navbar = () => {
             <ul
               className="dropdown-menu dropdown-menu-end shadow"
               aria-labelledby="userDropdown"
-              style={{ position: "absolute", top: "52px", border: "none", boxShadow: "none" }}
+              style={{
+                position: "absolute",
+                top: "52px",
+                border: "none",
+                boxShadow: "none",
+              }}
             >
               <li>
-                <Link to="/admin/profile" className="dropdown-item d-flex align-items-center text-decoration-none" style={{ color: "#000" }}>
-                  <FontAwesomeIcon icon={faUser} className="me-2" style={{ width: "30px", color: "#DAD3E2" }} />
+                <Link
+                  to="/admin/profile"
+                  className="dropdown-item d-flex align-items-center text-decoration-none"
+                  style={{ color: "#000" }}
+                >
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    className="me-2"
+                    style={{ width: "30px", color: "#DAD3E2" }}
+                  />
                   <span style={{ fontSize: "14px" }}>Profile</span>
                 </Link>
               </li>
-              <li><hr className="dropdown-divider" /></li>
               <li>
-                <button type="button" className="dropdown-item d-flex align-items-center" onClick={handleLogout} style={{ fontSize: "14px", paddingLeft: "25px" }}>
-                  <FontAwesomeIcon icon={faSignOutAlt} className="me-2" style={{ color: "#DAD3E2" }} />
+                <hr className="dropdown-divider" />
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="dropdown-item d-flex align-items-center"
+                  onClick={handleLogout}
+                  style={{ fontSize: "14px", paddingLeft: "25px" }}
+                >
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    className="me-2"
+                    style={{ color: "#DAD3E2" }}
+                  />
                   <span>Logout</span>
                 </button>
               </li>

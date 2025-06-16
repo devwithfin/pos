@@ -1,16 +1,44 @@
-import React from "react";
-import useTransactionsHistory from "../hooks/useTransactionsHistory";
+import React, { useState } from "react";
+import { useTransactionsHistory } from "../hooks/useTransaction";
 import Table from "../components/common/Table";
+import { formatDateToYMD } from "../utils/formatDate";
+import DeleteHistoryTrxModal from "../components/modals/transaction/SoftDeleteHistoryTrxModal";
+import { deleteTransactionsHistory } from "../services/transactionService";
+import Swal from "sweetalert2";
 
 export default function TransactionsHistory() {
-  const transactionsHistory = useTransactionsHistory();
+  const transactionsHistory = useTransactionsHistory(); 
+  const [showHistoryTrxModal, setShowHistoryTrxModal] = useState(false);
+  const [selectedTrx, setSelectedTrx] = useState(null);
 
   const handleEdit = (row) => {
     console.log("Edit:", row);
   };
 
   const handleDelete = (row) => {
-    console.log("Delete:", row);
+    setSelectedTrx(row);
+    setShowHistoryTrxModal(true);
+  };
+
+  const confirmDelete = async (id) => {
+    try {
+      await deleteTransactionsHistory(id);
+      setShowHistoryTrxModal(false);
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "Transaction has been Deleted.",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Delete failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Couldn't Delete Transaction.",
+      });
+    }
   };
 
   const renderColumnsWithPage = (currentPage, perPage) => [
@@ -23,11 +51,11 @@ export default function TransactionsHistory() {
       name: "Product Name",
       selector: (row) => row.name,
       sortable: true,
-      width: "300px",
+      width: "200px",
     },
     {
       name: "Quantity",
-      selector: (row) => row.quantity,
+      selector: (row) => `${row.quantity} ${row.unit}`,
       sortable: true,
       width: "150px",
     },
@@ -38,8 +66,20 @@ export default function TransactionsHistory() {
       width: "150px",
     },
     {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+      width: "150px",
+    },
+    {
       name: "Purchaser",
       selector: (row) => row.username,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Date",
+      selector: (row) => formatDateToYMD(row.created_at),
       sortable: true,
       width: "150px",
     },
@@ -78,6 +118,14 @@ export default function TransactionsHistory() {
         renderColumnsWithPage={renderColumnsWithPage}
         showAddButton={false}
       />
+
+      {showHistoryTrxModal && selectedTrx && (
+        <DeleteHistoryTrxModal
+          historyTrx={selectedTrx}
+          onClose={() => setShowHistoryTrxModal(false)}
+          onConfirm={() => confirmDelete(selectedTrx.id)}
+        />
+      )}
     </div>
   );
 }

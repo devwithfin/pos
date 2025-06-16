@@ -1,9 +1,15 @@
-import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
-import useProfile from "../hooks/useProfile";
+import { useEffect, useState } from "react";
 
 function Profile() {
-  const { username, role_name } = useProfile();
+  // const [id_user, setIdUser] = useState("");
+  const [username, setUsername] = useState("");
+  const [role_name, setRoleName] = useState("");
+
+  useEffect(() => {
+    // setIdUser(localStorage.getItem("id_user") || "");
+    setUsername(localStorage.getItem("username") || "");
+    setRoleName(localStorage.getItem("role_name") || "");
+  }, []);
 
   return (
     <div className="bg-light p-4">
@@ -81,14 +87,6 @@ function Profile() {
                     />
                   </div>
                 </div>
-
-                {/* <button
-                  type="submit"
-                  className="btn w-100 fw-medium"
-                  style={{ backgroundColor: "#4369D7", color: "#fff" }}
-                >
-                  Save Data
-                </button> */}
               </form>
             </div>
           </div>

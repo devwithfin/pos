@@ -5,8 +5,7 @@ import {
   faIdCard,
   faCartFlatbed,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatRupiah } from "../utils/formatCurrency";
 
 function SummaryCards() {
@@ -26,15 +25,15 @@ function SummaryCards() {
   }, []);
 
   const cards = [
-  {
-    title: "Purchases Total",
-  value: formatRupiah(summary.totalPurchases),
-    icon: faWallet,
-    color: "primary",
-  },
-   {
+    {
+      title: "Purchases Total",
+      value: formatRupiah(summary.totalPurchases),
+      icon: faWallet,
+      color: "primary",
+    },
+    {
       title: "Sales Total",
-  value: formatRupiah(summary.totalSales),
+      value: formatRupiah(summary.totalSales),
       icon: faCartFlatbed,
       color: "warning",
     },
@@ -49,7 +48,7 @@ function SummaryCards() {
       value: Number(summary.totalUser),
       icon: faIdCard,
       color: "info",
-    }
+    },
   ];
 
   return (

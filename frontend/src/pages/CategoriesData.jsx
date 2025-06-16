@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Table from "../components/common/Table";
-import AddCategoryModal from "../components/modals/AddCategoryModal";
-import { getCategories, saveCategory } from "../services/categoriesService";
+import AddCategoryModal from "../components/modals/category/AddCategoryModal";
+import EditCategoryModal from "../components/modals/category/EditCategoryModal";
+import DeleteCategoryModal from "../components/modals/category/SoftDeleteCategoryModal";
+
+import {
+  getCategories,
+  saveCategory,
+  updateCategory,
+  deleteCategory,
+} from "../services/categoryService";
 
 export default function CategoriesData() {
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -17,20 +28,19 @@ export default function CategoriesData() {
       const response = await getCategories();
       setCategories(response.data);
     } catch (error) {
-      console.error("Failed to fetch category data:", error);
+      console.error("Failed to Fetch Category Data:", error);
     }
   };
 
   const handleSave = async (newCategory) => {
     try {
       await saveCategory({ name: newCategory.name });
-      setShowModal(false);
+      setShowAddModal(false);
       fetchCategories();
-
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Category Successfully Saved!",
+        text: "Category Successfully Saved",
         timer: 1000,
         showConfirmButton: false,
       });
@@ -45,12 +55,55 @@ export default function CategoriesData() {
     }
   };
 
-  const handleEdit = (row) => {
-    console.log("Edit:", row);
+  const handleUpdate = async (updatedData) => {
+    try {
+      await updateCategory(updatedData.id, { name: updatedData.name });
+      setShowEditModal(false);
+      fetchCategories();
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Category Successfully Update",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to Update Category";
+      Swal.fire({
+        icon: "error",
+        title: "Failed Update Category",
+        text: errorMsg,
+      });
+      console.error(err);
+    }
   };
 
   const handleDelete = (row) => {
-    console.log("Delete:", row);
+    setSelectedCategory(row);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async (id) => {
+    try {
+      await deleteCategory(id);
+      setShowDeleteModal(false);
+      fetchCategories();
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "Category has been Deleted",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Delete Failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Couldn't Delete Category",
+      });
+    }
   };
 
   const renderColumnsWithPage = (currentPage, perPage) => [
@@ -71,7 +124,10 @@ export default function CategoriesData() {
       cell: (row) => (
         <div className="d-flex gap-2">
           <button
-            onClick={() => handleEdit(row)}
+            onClick={() => {
+              setSelectedCategory(row);
+              setShowEditModal(true);
+            }}
             className="btn btn-sm btn-warning text-white"
             style={{ width: "70px" }}
           >
@@ -99,15 +155,31 @@ export default function CategoriesData() {
         title="Categories Data"
         data={categories}
         renderColumnsWithPage={renderColumnsWithPage}
-        onAdd={() => setShowModal(true)}
+        onAdd={() => setShowAddModal(true)}
       />
 
-      {showModal && (
+      {showAddModal && (
         <AddCategoryModal
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowAddModal(false)}
           onSave={handleSave}
+        />
+      )}
+
+      {showEditModal && (
+        <EditCategoryModal
+          category={selectedCategory}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleUpdate}
+        />
+      )}
+
+      {showDeleteModal && selectedCategory && (
+        <DeleteCategoryModal
+          category={selectedCategory}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => confirmDelete(selectedCategory.id)}
         />
       )}
     </div>
   );
-}
+ }

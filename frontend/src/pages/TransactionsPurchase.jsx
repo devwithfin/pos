@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { getSuppliers } from "../services/suppliersService";
-import { getProducts } from "../services/productsService";
+import { getSuppliers } from "../services/supplierService";
+import { getProducts } from "../services/productService";
 import { formatRupiah } from "../utils/formatCurrency";
 
 import {
@@ -19,17 +19,19 @@ export default function TransactionPurchase() {
 
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState("");
-
   const [products, setProducts] = useState([]);
-
   const [status, setStatus] = useState("");
   const [items, setItems] = useState([
     { product_id: "", quantity: "", unit_price: "", total_price: "" },
   ]);
-  const totalPrice = items.reduce(
-    (sum, item) => sum + (parseFloat(item.total_price) || 0),
-    0
-  );
+
+ const totalPrice = Array.isArray(items)
+  ? items.reduce(
+      (sum, item) => sum + (parseFloat(item.total_price) || 0),
+      0
+    )
+  : 0;
+
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -71,7 +73,7 @@ export default function TransactionPurchase() {
         className="p-3 shadow rounded-2"
         style={{ backgroundColor: "#fff" }}
         onSubmit={(e) =>
-          handleSave(e, items, setSuppliers, setStatus, setItems, id_user)
+          handleSave(e, items, setStatus, setItems, setSelectedSupplier, id_user)
         }
       >
         <div className="row px-3">

@@ -21,6 +21,8 @@ import TransactionsSale from "../pages/TransactionsSale.jsx";
 import TransactionsHistory from "../pages/TransactionsHistory.jsx";
 // profile page
 import Profile from "../pages/Profile.jsx";
+// archives page
+import Archived from "../pages/Archived.jsx";
 
 
 const AppRoute = () => (
@@ -38,7 +40,8 @@ const AppRoute = () => (
         <Route path="/admin/transactions/purchase" element={<TransactionsPurchase />} />
         <Route path="/admin/transactions/sale" element={<TransactionsSale />} />
         <Route path="/admin/transactions/history" element={<TransactionsHistory />} />
-         <Route path="/admin/profile" element={<Profile />} />
+        <Route path="/admin/profile" element={<Profile />} />
+         <Route path="/admin/archived" element={<Archived />} />
       </Route>
     </Route>
     <Route path="*" element={<Navigate to="/" />} />

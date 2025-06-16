@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Table from "../components/common/Table";
-import AddSupplierModal from "../components/modals/AddSupplierModal";
-import { getSuppliers, saveSupplier } from "../services/suppliersService";
+import AddSupplierModal from "../components/modals/supplier/AddSupplierModal";
+import EditSupplierModal from "../components/modals/supplier/EditSupplierModal";
+import DeleteSupplierModal from "../components/modals/supplier/SoftDeleteSupplierModal";
+import {
+  getSuppliers,
+  saveSupplier,
+  updateSupplier,
+  deleteSupplier,
+} from "../services/supplierService";
 
 export default function SupplierData() {
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
@@ -17,20 +27,20 @@ export default function SupplierData() {
       const response = await getSuppliers();
       setSuppliers(response.data);
     } catch (error) {
-      console.error("Failed to fetch supplier data:", error);
+      console.error("Failed to Fetch Supplier Data:", error);
     }
   };
 
   const handleSave = async (newSupplier) => {
     try {
       await saveSupplier(newSupplier);
-      setShowModal(false);
+      setShowAddModal(false);
       fetchSuppliers();
 
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Supplier Successfully Saved!",
+        text: "Supplier Successfully Saved",
         timer: 1000,
         showConfirmButton: false,
       });
@@ -45,12 +55,58 @@ export default function SupplierData() {
     }
   };
 
-  const handleEdit = (row) => {
-    console.log("Edit:", row);
+  const handleUpdate = async (updatedData) => {
+    try {
+      await updateSupplier(updatedData.id, {
+        name: updatedData.name,
+        contact: updatedData.contact,
+      });
+      setShowEditModal(false);
+      fetchSuppliers();
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Supplier Successfully Update",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to Update Supplier";
+      Swal.fire({
+        icon: "error",
+        title: "Failed Update Supplier",
+        text: errorMsg,
+      });
+      console.error(err);
+    }
   };
 
   const handleDelete = (row) => {
-    console.log("Delete:", row);
+    setSelectedSupplier(row);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async (id) => {
+    try {
+      await deleteSupplier(id);
+      setShowDeleteModal(false);
+      fetchSuppliers();
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "Supplier has been Deleted.",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Delete Failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Couldn't  Delete Supplier.",
+      });
+    }
   };
 
   const renderColumnsWithPage = (currentPage, perPage) => [
@@ -77,7 +133,10 @@ export default function SupplierData() {
       cell: (row) => (
         <div className="d-flex gap-2">
           <button
-            onClick={() => handleEdit(row)}
+            onClick={() => {
+              setSelectedSupplier(row);
+              setShowEditModal(true);
+            }}
             className="btn btn-sm btn-warning text-white"
             style={{ width: "70px" }}
           >
@@ -105,13 +164,29 @@ export default function SupplierData() {
         title="Suppliers Data"
         data={suppliers}
         renderColumnsWithPage={renderColumnsWithPage}
-        onAdd={() => setShowModal(true)}
+        onAdd={() => setShowAddModal(true)}
       />
 
-      {showModal && (
+      {showAddModal && (
         <AddSupplierModal
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowAddModal(false)}
           onSave={handleSave}
+        />
+      )}
+
+      {showEditModal && (
+        <EditSupplierModal
+          supplier={selectedSupplier}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleUpdate}
+        />
+      )}
+
+      {showDeleteModal && selectedSupplier && (
+        <DeleteSupplierModal
+          supplier={selectedSupplier}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => confirmDelete(selectedSupplier.id)}
         />
       )}
     </div>

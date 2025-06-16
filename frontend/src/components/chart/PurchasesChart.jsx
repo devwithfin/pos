@@ -8,7 +8,7 @@ import {
   Filler,
   Tooltip,
 } from "chart.js";
-import useWeeklyPurchases from "../../hooks/useWeeklyPurchases";
+import {useWeeklyPurchases} from "../../hooks/useTransaction";
 import { getLast7DaysLabels } from "../../utils/formatDate";
 
 ChartJS.register(

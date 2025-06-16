@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { saveSale } from "../services/transactionsService";
+import { saveSale } from "../services/transactionService";
 
 export const handleAddItem = (items, setItems) => {
   setItems((prev) => [
@@ -31,7 +31,7 @@ export const handleRemoveItem = (index, items, setItems) => {
   setItems((prevItems) => prevItems.filter((_, i) => i !== index));
 };
 
-export const handleSave = async (e, items, setCustomerId, setStatus, setItems, id_user) => {
+export const handleSave = async (e, items, setStatus, setItems, setCustomerId,  id_user) => {
   e.preventDefault();
  console.log("id_user:", id_user);
   const form = e.target;

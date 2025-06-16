@@ -12,7 +12,7 @@ router.post("/login", async (req, res) => {
     if (!username || !password) {
       return res
         .status(400)
-        .json({ message: "Username and password are required" });
+        .json({ message: "Username and Password Required" });
     }
 
     const [rows] = await db.execute(
@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
       role_name: user.role_name,
     });
   } catch (err) {
-    console.error("[LOGIN ERROR]", err.message);
+    console.error(err.message);
     res.status(500).json({ message: err.message });
   }
 });

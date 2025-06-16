@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { getCustomers } from "../services/customersService";
-import { getProducts } from "../services/productsService";
+import { getCustomers } from "../services/customerService";
+import { getProducts } from "../services/productService";
 import { formatRupiah } from "../utils/formatCurrency";
 
 import {
@@ -12,16 +12,14 @@ import {
   handleSave,
 } from "../helpers/saleHandler";
 
-export default function TransactionPurchase() {
+export default function TransactionSale() {
   const username = localStorage.getItem("username");
   const id_user = localStorage.getItem("id_user");
   const statusList = ["Paid", "Unpaid", "Cancel"];
 
   const [customers, setCustomers] = useState([]);
   const [selecteCustomer, setSelectedCustomer] = useState("");
-
   const [products, setProducts] = useState([]);
-
   const [status, setStatus] = useState("");
   const [items, setItems] = useState([
     { product_id: "", quantity: "", unit_price: "", total_price: "" },
@@ -71,7 +69,7 @@ export default function TransactionPurchase() {
         className="p-3 shadow rounded-2"
         style={{ backgroundColor: "#fff" }}
         onSubmit={(e) =>
-          handleSave(e, items, setCustomers, setStatus, setItems, id_user)
+          handleSave(e, items, setStatus, setItems, setSelectedCustomer, id_user)
         }
       >
         <div className="row px-3">

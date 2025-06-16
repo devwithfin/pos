@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "chart.js";
 
-import useWeeklySales from "../../hooks/useWeeklySales";
+import {useWeeklySales} from "../../hooks/useTransaction";
 import { getLast7DaysLabels } from "../../utils/formatDate";
 
 ChartJS.register(

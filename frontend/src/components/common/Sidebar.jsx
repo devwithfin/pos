@@ -7,9 +7,9 @@ import {
   faCog,
   faAngleDown,
   faAngleRight,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect, useRef  } from "react";
- 
+import { useState, useEffect, useRef } from "react";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -18,52 +18,49 @@ const Sidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-const isMasterDataActive = [
-  "/admin/data/categories",
-  "/admin/data/customers",
-  "/admin/data/products",
-  "/admin/data/roles",
-  "/admin/data/suppliers",
-  "/admin/data/users",
-].includes(location.pathname);
+  const isMasterDataActive = [
+    "/admin/data/categories",
+    "/admin/data/customers",
+    "/admin/data/products",
+    "/admin/data/roles",
+    "/admin/data/suppliers",
+    "/admin/data/users",
+  ].includes(location.pathname);
 
-const isTransactionsActive = [
-  "/admin/transactions/history"
-].includes(location.pathname);
+  const isTransactionsActive = ["/admin/transactions/history"].includes(
+    location.pathname
+  );
 
+  const toggleMenuMasterData = (e) => {
+    e.stopPropagation();
+    setOpenMasterData(!openMasterData);
+    setOpenTransactions(false);
+  };
 
- const toggleMenuMasterData = (e) => {
-  e.stopPropagation();
-  setOpenMasterData(!openMasterData);
-  setOpenTransactions(false); 
-};
-
-const toggleMenuTransactions = (e) => {
-  e.stopPropagation();
-  setOpenTransactions(!openTransactions);
-  setOpenMasterData(false);  
-};
-
+  const toggleMenuTransactions = (e) => {
+    e.stopPropagation();
+    setOpenTransactions(!openTransactions);
+    setOpenMasterData(false);
+  };
 
   const sidebarRef = useRef(null);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setOpenMasterData(false);
-      setOpenTransactions(false);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setOpenMasterData(false);
+        setOpenTransactions(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  document.addEventListener("touchstart", handleClickOutside); // untuk mobile
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside); // untuk mobile
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-    document.removeEventListener("touchstart", handleClickOutside);
-  };
-}, []);
-
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -104,7 +101,7 @@ useEffect(() => {
       `}</style>
 
       <div
-      ref={sidebarRef}
+        ref={sidebarRef}
         className="text-white position-fixed"
         style={{
           backgroundColor: "#4E73DF",
@@ -159,7 +156,9 @@ useEffect(() => {
                 <FontAwesomeIcon icon={faCog} />
                 <span>Master Data</span>
               </div>
-              <FontAwesomeIcon icon={openMasterData ? faAngleDown : faAngleRight} />
+              <FontAwesomeIcon
+                icon={openMasterData ? faAngleDown : faAngleRight}
+              />
             </div>
 
             {openMasterData && (
@@ -230,7 +229,7 @@ useEffect(() => {
             )}
           </li>
 
-{/* Expandable menu */}
+          {/* Expandable menu */}
           <li className="nav-item mb-2">
             <div
               className={`nav-link fw-medium d-flex align-items-center justify-content-between ${
@@ -243,7 +242,9 @@ useEffect(() => {
                 <FontAwesomeIcon icon={faFile} />
                 <span>Transactions</span>
               </div>
-              <FontAwesomeIcon icon={openTransactions ? faAngleDown : faAngleRight} />
+              <FontAwesomeIcon
+                icon={openTransactions ? faAngleDown : faAngleRight}
+              />
             </div>
 
             {openTransactions && (
@@ -278,11 +279,21 @@ useEffect(() => {
                 >
                   History
                 </Link>
-                
               </div>
             )}
           </li>
-          
+          <li className="nav-item mb-2">
+            <Link
+              to="/admin/archived"
+              className={`nav-link fw-medium d-flex align-items-center gap-2 ${
+                isActive("/admin/archived") ? "active" : ""
+              }`}
+              style={{ fontSize: "14px" }}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+              <span>Archived</span>
+            </Link>
+          </li>
         </ul>
       </div>
     </>

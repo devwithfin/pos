@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { savePurchase } from "../services/transactionsService";
+import { savePurchase } from "../services/transactionService";
 
 export const handleAddItem = (items, setItems) => {
   setItems((prev) => [
@@ -10,6 +10,7 @@ export const handleAddItem = (items, setItems) => {
 
 export const handleItemChange = (index, field, value, items, setItems, products) => {
   const newItems = [...items];
+  
   if (field === "product_id") {
     newItems[index].product_id = value;
     const selectedProduct = products.find(
@@ -31,9 +32,16 @@ export const handleRemoveItem = (index, items, setItems) => {
   setItems((prevItems) => prevItems.filter((_, i) => i !== index));
 };
 
-export const handleSave = async (e, items, setSupplierId, setStatus, setItems, id_user) => {
+export const handleSave = async (
+  e,
+  items,
+  setStatus,
+  setItems,
+  setSupplierId,
+  id_user
+) => {
   e.preventDefault();
- console.log("id_user:", id_user);
+
   const form = e.target;
   const supplier_id = form.supplier_id.value;
   const statusValue = form.status.value;
@@ -56,14 +64,16 @@ export const handleSave = async (e, items, setSupplierId, setStatus, setItems, i
     Swal.fire({
       icon: "success",
       title: "Success",
-      text: "Successfully Purchase!",
+      text: "Successfully Purchase",
       timer: 1000,
       showConfirmButton: false,
     });
 
     setSupplierId("");
     setStatus("");
-    setItems([{ product_id: "", quantity: "", unit_price: "", total_price: "" }]);
+    setItems([
+      { product_id: "", quantity: "", unit_price: "", total_price: "" },
+    ]);
   } catch (err) {
     const errorMsg = err.response?.data?.message || "Failed to Purchase";
     Swal.fire({
