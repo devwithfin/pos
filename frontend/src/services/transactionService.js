@@ -12,20 +12,12 @@ export const savePurchase = (purchase) =>
 export const saveSale = (sale) =>
   API.post("/transaction/sale", sale);
 
-export const getTransactionsHistory = async () => {
-  try {
-    const response = await API.get("/transactions/history");
-    return response.data;
-  } catch (error) {
-    console.error("Failed to Fetch Transactions History:", error);
-    throw error;
-  }
-};
 
+export const getInventory = () => API.get("/transactions/inventory");
+export const getHistoryPurchases = () => API.get("/transactions/purchases/history");
+export const getHistorySales = () => API.get("/transactions/sales/history");
 export const getWeeklyPurchases = () =>
   API.get("/purchases/weekly");
 
 export const getWeeklySales = () =>
   API.get("/sales/weekly");
-
-export const deleteTransactionsHistory = (id) => API.delete(`/transaction/history/${id}`);

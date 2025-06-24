@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-router.get("/transactions/history", async (req, res) => {
+router.get("/transactions/inventory", async (req, res) => {
   try {
     const [rows] = await db.execute(
       `
@@ -141,6 +141,40 @@ router.post("/transaction/purchase", async (req, res) => {
   }
 });
 
+router.get("/transactions/purchases/history", async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `
+    SELECT p.id, p.supplier_id, s.name, p.total, p.status, p.created_at, p.created_by, u.username FROM purchases p 
+    INNER JOIN suppliers s ON s.id = p.supplier_id
+    INNER JOIN users u ON u.id = p.created_by
+    ORDER BY p.id DESC;
+      `
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/transactions/sales/history", async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `
+    SELECT s.id, s.customer_id, c.name, s.total, s.status, s.created_at, s.created_by, u.username FROM sales s 
+    INNER JOIN customers c ON c.id = s.customer_id
+    INNER JOIN users u ON u.id = s.created_by
+    ORDER BY s.id DESC;
+      `
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 router.post("/transaction/sale", async (req, res) => {
   const { customer_id, status, created_by, items } = req.body;
   console.log("created_by:", created_by);
@@ -189,5 +223,6 @@ router.post("/transaction/sale", async (req, res) => {
     res.status(500).json({ message: "Failed to Save Sale" });
   }
 });
+
 
 module.exports = router;

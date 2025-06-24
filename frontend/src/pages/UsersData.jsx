@@ -1,9 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Table from "../components/common/Table";
-import { getUsers } from "../services/userService";
+import { getUsers, saveUser, deleteUser } from "../services/userService";
+import AddUserModal from "../components/modals/user/AddUserModal";
+import DeleteUserModal from "../components/modals/user/SoftDeleteUserModal";
+import Swal from "sweetalert2";
 
 export default function UsersData() {
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -17,13 +25,64 @@ export default function UsersData() {
     }
   };
 
+  const handleSave = async (newUser) => {
+    try {
+      await saveUser({
+        username: newUser.username,
+        password: newUser.password,
+        role_id: newUser.role_id,
+      });
+      setShowAddModal(false);
+      fetchUsers();
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "User Successfully Saved",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Failed to Save User";
+      Swal.fire({
+        icon: "error",
+        title: "Failed Save User",
+        text: errorMsg,
+      });
+      console.error(err);
+    }
+  };
+
   const handleEdit = (row) => {
     console.log("Edit:", row);
   };
 
-  const handleDelete = (row) => {
-    console.log("Delete:", row);
-  };
+   const handleDelete = (row) => {
+      setSelectedUser(row);
+      setShowDeleteModal(true);
+    };
+  
+    const confirmDelete = async (id) => {
+      try {
+        await deleteUser(id);
+        setShowDeleteModal(false);
+        fetchUsers();
+        Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "User has been Deleted",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        console.error("Delete Failed:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: "Couldn't Delete User",
+        });
+      }
+    };
+  
 
   const renderColumnsWithPage = useCallback((currentPage, perPage) => {
     return [
@@ -40,7 +99,7 @@ export default function UsersData() {
       },
       {
         name: "Role",
-        selector: (row) => row.name,
+        selector: (row) => row.role_name,
         sortable: true,
         width: "585px",
       },
@@ -49,13 +108,13 @@ export default function UsersData() {
         name: "Actions",
         cell: (row) => (
           <div className="d-flex gap-2">
-            <button
-              onClick={() => handleEdit(row)}
-              className="btn btn-sm btn-warning text-white"
-              style={{ width: "70px" }}
-            >
-              Edit
-            </button>
+              {/* <button
+                onClick={() => handleEdit(row)}
+                className="btn btn-sm btn-warning text-white"
+                style={{ width: "70px" }}
+              >
+                Edit
+              </button> */}
             <button
               onClick={() => handleDelete(row)}
               className="btn btn-sm btn-danger"
@@ -79,7 +138,23 @@ export default function UsersData() {
         title="Users Data"
         data={users}
         renderColumnsWithPage={renderColumnsWithPage}
+        onAdd={() => setShowAddModal(true)}
       />
+
+      {showAddModal && (
+        <AddUserModal
+          onClose={() => setShowAddModal(false)}
+          onSave={handleSave}
+        />
+      )}
+
+       {showDeleteModal && selectedUser && (
+              <DeleteUserModal
+                user={selectedUser}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={() => confirmDelete(selectedUser.id)}
+              />
+            )}
     </div>
   );
 }

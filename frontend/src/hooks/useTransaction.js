@@ -1,24 +1,6 @@
 import { useEffect, useState } from "react";
-import { getTransactionsHistory, getWeeklyPurchases, getWeeklySales } from "../services/transactionService";
+import { getWeeklyPurchases, getWeeklySales } from "../services/transactionService";
 
-export function useTransactionsHistory() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const result = await getTransactionsHistory();
-        setData(result);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  return data;
-}
 
 export function useWeeklyPurchases() {
   const [data, setData] = useState(Array(7).fill(0));

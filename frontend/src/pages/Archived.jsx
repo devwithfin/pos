@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Table from "../components/common/Table";
 import RestoreModal from "../components/modals/archieve/RestoreModal";
-import { getArchived, restoreArchivedItem } from "../services/archiveService";
+import {
+  getArchived,
+  restoreArchivedItem,
+  permanentlyDeleteItem,
+} from "../services/archiveService";
 import Swal from "sweetalert2";
 
 export default function Archived() {
   const [archived, setArchived] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);  
-  const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const capitalize = (text) =>
+    text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
 
   const mapTypeToTable = {
     category: "categories",
@@ -15,6 +21,7 @@ export default function Archived() {
     supplier: "suppliers",
     customer: "customers",
     role: "roles",
+    user: "users",
   };
 
   useEffect(() => {
@@ -46,8 +53,8 @@ export default function Archived() {
       fetchArchived();
       Swal.fire({
         icon: "success",
-        title: "Restore!",
-        text: `${capitalize(item.tableName)} has been Restore`,
+        title: "Restored!",
+        text: `${capitalize(item.tableName)} has been restored`,
         timer: 1000,
         showConfirmButton: false,
       });
@@ -56,14 +63,44 @@ export default function Archived() {
       Swal.fire({
         icon: "error",
         title: "Failed",
-        text: `Couldn't Restore ${capitalize(item.tableName)}`,
+        text: `Couldn't restore ${capitalize(item.tableName)}`,
       });
     }
   };
 
   const handlePermanentDelete = (row) => {
-    console.log("Delete:", row);
-    alert(`Permanent delete not implemented for: ${row.name}`);
+    const tableName = mapTypeToTable[row.type];
+
+    Swal.fire({
+      title: `Delete ${row.name}?`,
+      text: "This will permanently delete the data!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await permanentlyDeleteItem(tableName, row.id);
+          fetchArchived();
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: `${capitalize(row.type)} has been permanently deleted.`,
+            timer: 1000,
+            showConfirmButton: false,
+          });
+        } catch (error) {
+          console.error("Permanent delete failed:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Failed",
+            text: `Couldn't permanently delete ${capitalize(row.type)}.`,
+          });
+        }
+      }
+    });
   };
 
   const renderColumnsWithPage = (currentPage, perPage) => [

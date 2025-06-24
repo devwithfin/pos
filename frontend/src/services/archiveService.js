@@ -7,3 +7,5 @@ const API = axios.create({
 
 export const getArchived = () => API.get("/archived");
 export const restoreArchivedItem = (type, id) => API.put(`/restore/${type}/${id}`);
+export const permanentlyDeleteItem = (type, id) => API.delete(`/delete/${type}/${id}`);
+

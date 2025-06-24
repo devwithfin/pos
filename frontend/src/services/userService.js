@@ -6,6 +6,6 @@ const API = axios.create({
 });
 
 export const getUsers = () => API.get("/users");
-export const createUser = (data) => API.post("/user", data);
-export const updateUser = (id, data) => API.put(`/user/${id}`, data);
+export const saveUser = (user) => API.post("/user", user);
 export const deleteUser = (id) => API.delete(`/user/${id}`);
+

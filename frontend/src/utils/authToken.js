@@ -27,3 +27,4 @@ export function clearAuthData() {
   localStorage.removeItem('token');
   localStorage.removeItem('username');
 }
+
