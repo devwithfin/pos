@@ -3,6 +3,11 @@ const app = express();
 const cors = require('cors')
 require('dotenv').config();
 
+
+app.get('/', (req, res) => {
+  res.send('API aktif');
+});
+
 const authRoute = require('./routers/authRoute');
 const categoryRoute = require('./routers/categoryRoute');
 const customerRoute = require('./routers/customerRoute');
